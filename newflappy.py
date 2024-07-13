@@ -109,6 +109,7 @@ time.sleep(10)
 
 # Game loop
 running = True
+countDown = 20
 while running:
     # print ("Raw value: %s, Attention: %s, Meditation: %s" % (headset.raw_value, headset.attention, headset.meditation))
     # print ("Waves: {}".format(headset.waves))
@@ -123,7 +124,7 @@ while running:
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE and not game_over:
-                bird_movement = -10  # Adjust jump strength as needed
+                bird_movement = -2  # Adjust jump strength as needed
 
             if event.key == pygame.K_SPACE and game_over:
                 game_over = False
@@ -139,11 +140,23 @@ while running:
 
             if event.key == pygame.K_LEFT:  # Decrease speed (minimum 1 m/s)
                 bird_velocity = max(1, bird_velocity - 1)
+            
 
         if event.type == bird_flap:
-            bird_index = (bird_index + 1) % len(birds)
-            bird_img = birds[bird_index]
+            bird_index += 1
 
+            if bird_index > 2:
+                bird_index = 0
+
+            bird_img = birds[bird_index]
+            bird_rect = bird_up.get_rect(center=bird_rect.center)
+
+    if (countDown - time_elapsed) < 0:
+        game_over = True
+    
+    # Drawing elements
+    screen.blit(back_img, (0, 0))
+    screen.blit(floor_img, (floor_x, 550))
 
     bird_velocity = headset.attention / 10
 
@@ -160,11 +173,14 @@ while running:
     if not game_over:
         time_elapsed += 1 / 60  # Update time elapsed (assuming 60 FPS)
 
-    # Drawing elements
-    screen.blit(back_img, (0, 0))
-    screen.blit(floor_img, (floor_x, 550))
 
     if not game_over:
+        bird_rect.centery += bird_movement
+        rotated_bird = pygame.transform.rotozoom(bird_img, bird_movement * -6, 1)
+
+        if bird_rect.top < 5 or bird_rect.bottom >= 550:
+            game_over = True
+
         distance_covered += current_speed / 60  # Increase distance based on velocity
 
         pipe_animation()
@@ -172,10 +188,15 @@ while running:
         draw_data(headset.meditation, headset.attention)
         draw_distance(distance_covered)
         draw_speed(current_speed)  # Draw current speed
-        draw_time(time_elapsed)  # Draw game time
+        draw_time(countDown - time_elapsed)  # Draw game time
 
     else:
         screen.blit(over_img, over_rect)
+
+    # To move the base
+    floor_x -= 1
+    if floor_x < -448:
+        floor_x = 0
 
     draw_floor()
     pygame.display.update()
