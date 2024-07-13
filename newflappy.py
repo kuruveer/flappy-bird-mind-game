@@ -52,7 +52,7 @@ bird_velocity = 1  # Initial velocity in meters per second
 current_speed = 0  # Current speed in pixels per second
 
 # Score font
-score_font = pygame.font.Font("freesansbold.ttf", 20)
+score_font = pygame.font.Font("freesansbold.ttf", 14)
 
 # Function to draw floor
 def draw_floor():
@@ -110,10 +110,10 @@ time.sleep(10)
 # Game loop
 running = True
 while running:
-    print ("Raw value: %s, Attention: %s, Meditation: %s" % (headset.raw_value, headset.attention, headset.meditation))
-    print ("Waves: {}".format(headset.waves))
-    print ("Values: ", list(headset.waves.values()))
-    time.sleep(1)
+    # print ("Raw value: %s, Attention: %s, Meditation: %s" % (headset.raw_value, headset.attention, headset.meditation))
+    # print ("Waves: {}".format(headset.waves))
+    # print ("Values: ", list(headset.waves.values()))
+    # time.sleep(1)
     clock.tick(60)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -145,7 +145,7 @@ while running:
             bird_img = birds[bird_index]
 
 
-    # bird_velocity = headset.attention / 10
+    bird_velocity = headset.attention / 10
 
 
     # Bird movement
@@ -162,6 +162,7 @@ while running:
 
     # Drawing elements
     screen.blit(back_img, (0, 0))
+    screen.blit(floor_img, (floor_x, 550))
 
     if not game_over:
         distance_covered += current_speed / 60  # Increase distance based on velocity
